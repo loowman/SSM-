@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.dao.ProductMapper">
+<resultMap type="com.shop.entity.Product" id="productMap">
+         <id column="pid" property="pid"/>
+         <result column="pname" property="pname"/>
+         <result column="market_price" property="marketPrice"/>
+         <result column="shop_price" property="shopPrice"/>
+         <result column="image" property="image"/>
+         <result column="pdesc" property="pdesc"/>
+         <result column="is_hot" property="isHot"/>
+         <result column="pdate" property="pdate"/>
+</resultMap>
+
+
+
+<!-- 商品查询根据二级分类的id -->
+<select id="findProductByCategorySecond" resultType="com.shop.entity.Product">
+  select * from product where csid=#{csid}
+</select>
+
+
+<select  id="findProductsByHot" resultMap="productMap">
+ select pid,pname,market_price,shop_price,image,pdesc,is_hot,pdate
+     from product
+     where
+     is_hot=1
+</select>
+
+<select id="findProductByNew" resultMap="productMap">
+  select pid,pname,market_price,shop_price,image,pdesc,is_hot,pdate
+     from product
+     order by pdate desc
+     limit 0,10
+</select>
+
+
+<select id="findProductById" resultMap="productMap">
+select pid,pname,market_price,shop_price,image,pdesc,is_hot,pdate
+     from product where pid=#{pid}
+</select>
+
+
+<select id="findCountsByCsId" resultType="java.lang.Integer">
+select count(pid) from product where csid=#{csid}
+
+</select>
+
+<select id="findProductByCsidAndPage" resultMap="productMap"> 
+select *  from product where csid=#{csid} limit #{begin},#{limit} 
+
+</select>
+
+<select id="findCountByCid" resultType="Integer">
+     select count(*) from Product p join categorysecond cs join category c 
+     on p.csid=cs.csid and cs.cid=c.cid
+     where c.cid =#{cid}
+</select>
+
+<select id="findByPage" resultMap="productMap">
+     select  
+     p.pid,
+     p.pname,
+     p.market_price,
+     p.shop_price,
+     p.image,
+     p.pdesc,
+     p.is_hot,
+     p.pdate,
+     p.csid
+     FROM 
+     categorysecond cs JOIN 
+     category c 
+     JOIN product p 
+     ON p.csid=cs.csid
+     and cs.cid=c.cid
+     where c.cid=#{cid}
+     limit #{begin},#{limit}
+</select>
+
+</mapper>
